@@ -33,6 +33,12 @@ function Remove-ClaudeHookConfig {
     .LINK
         about_ClaudeHooks
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidAssignmentToAutomaticVariable',
+        'Event',
+        Scope = 'Function',
+        Justification = 'Parameter is immediately re-assigned.'
+    )]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
@@ -50,8 +56,15 @@ function Remove-ClaudeHookConfig {
 
         [switch]$PassThru
     )
+    # $eventName is an automatic variable in event handlers, so we use
+    # $eventName for the parameter and $eventNameName for the internal variable
+    # to avoid conflicts.
+    $eventName = $PSBoundParameters['Event']
 
-    $filePath = if ($PSBoundParameters.ContainsKey('Path') -and $Scope -ne 'Plugin') {
+    $filePath = if (
+        $PSBoundParameters.ContainsKey('Path') -and
+        $Scope -ne 'Plugin'
+    ) {
         $Path
     } else {
         Resolve-ClaudeSettingsPath -Scope $Scope -Path $Path
@@ -59,26 +72,39 @@ function Remove-ClaudeHookConfig {
 
     if (-not (Test-Path $filePath)) { return }
 
-    if (-not $PSCmdlet.ShouldProcess($filePath, "Remove $Event hook (matcher: '$Matcher')")) { return }
+    $description = "Remove $eventName hook (matcher: '$Matcher')"
+    if (-not $PSCmdlet.ShouldProcess($filePath, $description)) { return }
 
     $hasCommand = $PSBoundParameters.ContainsKey('Command')
 
-    $editFn = if ($Scope -eq 'Plugin') { { param($p,$m) Edit-ClaudePluginManifest -Path $p -Modifier $m } }
-              else                      { { param($p,$m) Edit-ClaudeSettingsFile   -Path $p -Modifier $m } }
+    $editFn = if ($Scope -eq 'Plugin') {
+        { param($p, $m) Edit-ClaudePluginManifest -Path $p -Modifier $m }
+    } else {
+        { param($p, $m) Edit-ClaudeSettingsFile   -Path $p -Modifier $m }
+    }
 
     & $editFn $filePath {
         param($settings)
 
-        if (-not $settings['hooks'] -or -not $settings['hooks'][$Event]) { return $settings }
+        if (
+            -not $settings['hooks'] -or
+            -not $settings['hooks'][$eventName]
+        ) {
+            return $settings
+        }
 
         $matcherEntries = [System.Collections.Generic.List[object]]::new()
-        $matcherEntries.AddRange([object[]]@($settings['hooks'][$Event]))
+        $matcherEntries.AddRange([object[]]@($settings['hooks'][$eventName]))
 
-        $toRemove = $matcherEntries | Where-Object { $_['matcher'] -eq $Matcher }
+        $toRemove = $matcherEntries | Where-Object {
+            $_['matcher'] -eq $Matcher
+        }
 
         foreach ($me in @($toRemove)) {
             if ($hasCommand) {
-                $remaining = @($me['hooks']) | Where-Object { $_['command'] -ne $Command }
+                $remaining = @($me['hooks']) | Where-Object {
+                    $_['command'] -ne $Command
+                }
                 if ($remaining.Count -eq 0) {
                     $matcherEntries.Remove($me) | Out-Null
                 } else {
@@ -89,10 +115,10 @@ function Remove-ClaudeHookConfig {
             }
         }
 
-        $settings['hooks'][$Event] = $matcherEntries.ToArray()
+        $settings['hooks'][$eventName] = $matcherEntries.ToArray()
 
-        if (@($settings['hooks'][$Event]).Count -eq 0) {
-            $settings['hooks'].Remove($Event)
+        if (@($settings['hooks'][$eventName]).Count -eq 0) {
+            $settings['hooks'].Remove($eventName)
         }
 
         $settings

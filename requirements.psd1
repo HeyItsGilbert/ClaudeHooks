@@ -6,21 +6,27 @@
         Target = 'CurrentUser'
     }
     'Pester' = @{
-        Version = '5.4.0'
+        Version = '5.7.1'
         Parameters = @{
             SkipPublisherCheck = $true
         }
     }
     'psake' = @{
-        Version = '4.9.0'
+        Version = '5.0.3'
+        Parameters = @{
+            AllowPrerelease = $true
+        }
     }
     'BuildHelpers' = @{
         Version = '2.0.16'
     }
     'PowerShellBuild' = @{
-        Version = '0.6.1'
+        Version = '0.7.2'
     }
     'PSScriptAnalyzer' = @{
         Version = '1.19.1'
+    }
+    'GoodEnoughRules' = @{
+        Version = 'latest'
     }
 }

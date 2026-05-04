@@ -7,13 +7,13 @@ PowerShell helpers for writing and registering [Claude Code](https://code.claude
 Clone this repository and import the module:
 
 ```powershell
-Import-Module D:\PSClaudeHelpers\ClaudeHooks
+Import-Module D:\ClaudeHooks\ClaudeHooks
 ```
 
 Or add to your profile:
 
 ```powershell
-Import-Module ~\path\to\PSClaudeHelpers\ClaudeHooks
+Import-Module ~\path\to\ClaudeHooks\ClaudeHooks
 ```
 
 Future versions will be published to PSGallery for `Install-Module ClaudeHooks`.
@@ -67,25 +67,25 @@ Choose the right function based on your hook's situation:
 
 | Situation | Use |
 |-----------|-----|
-| PreToolUse — allow | `Write-ClaudeHookAllow` |
-| PreToolUse — deny | `Write-ClaudeHookDeny` |
-| PreToolUse — ask user | `Write-ClaudeHookAsk` |
-| PreToolUse — allow with modified input | `Write-ClaudeHookUpdatedInput` |
-| Stop / UserPromptSubmit / PostToolUse — block | `Write-ClaudeHookBlock` |
-| Any event — inject context for Claude | `Write-ClaudeHookContext` |
-| Any event — show a message (non-blocking) | `Write-ClaudeHookResponse -SystemMessage` |
+| PreToolUse - allow | `Write-ClaudeHookAllow` |
+| PreToolUse - deny | `Write-ClaudeHookDeny` |
+| PreToolUse - ask user | `Write-ClaudeHookAsk` |
+| PreToolUse - allow with modified input | `Write-ClaudeHookUpdatedInput` |
+| Stop / UserPromptSubmit / PostToolUse - block | `Write-ClaudeHookBlock` |
+| Any event - inject context for Claude | `Write-ClaudeHookContext` |
+| Any event - show a message (non-blocking) | `Write-ClaudeHookResponse -SystemMessage` |
 | Hard blocking exit-2 error | `Write-ClaudeHookResponse -BlockingError` |
 
 ## Concepts
 
 Read the comprehensive [about_ClaudeHooks](docs/en-US/about_ClaudeHooks.help.md) help topic for details on:
 
-- Hook lifecycle (JSON stdin → decision → JSON stdout → exit code)
+- Hook lifecycle (JSON stdin -> decision -> JSON stdout -> exit code)
 - Exit code semantics
 - Settings scope precedence
 - Input/output JSON shapes
 
-For the official hooks specification, see https://code.claude.com/docs/en/hooks.md
+For the official hooks specification, see <https://code.claude.com/docs/en/hooks.md>
 
 ## Function reference
 
@@ -110,8 +110,8 @@ For the official hooks specification, see https://code.claude.com/docs/en/hooks.
 
 See the [Examples](Examples/) folder for ready-to-use hook scripts:
 
-- `block-rm-rf.ps1` — Deny destructive `rm -rf` commands
-- `inject-edit-context.ps1` — Add context when editing generated files
-- `session-banner.ps1` — Inject project info at session start
+- `block-rm-rf.ps1` - Deny destructive `rm -rf` commands
+- `inject-edit-context.ps1` - Add context when editing generated files
+- `session-banner.ps1` - Inject project info at session start
 
 Copy these to your hooks directory (e.g. `~/.claude/hooks/`) and register them with `Add-ClaudeHookConfig`.

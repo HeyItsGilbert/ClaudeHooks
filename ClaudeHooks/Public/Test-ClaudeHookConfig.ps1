@@ -23,11 +23,16 @@ function Test-ClaudeHookConfig {
 
         Validates the project settings file and filters the results to show only errors.
     .OUTPUTS
-        System.Management.Automation.PSCustomObject
+        [System.Collections.Generic.List[PSCustomObject]]
     .LINK
         about_ClaudeHooks
     #>
-    [OutputType([pscustomobject])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSReviewUnusedParameter',
+        'Strict',
+        Justification = 'Used in inner function Add-Result.'
+    )]
+    [OutputType([System.Collections.Generic.List[PSCustomObject]])]
     [CmdletBinding(DefaultParameterSetName = 'Path')]
     param(
         [Parameter(ParameterSetName = 'Path', Mandatory)]
@@ -39,11 +44,11 @@ function Test-ClaudeHookConfig {
         [switch]$Strict
     )
 
-    $results = [System.Collections.Generic.List[pscustomobject]]::new()
+    $results = [System.Collections.Generic.List[PSCustomObject]]::new()
 
     function Add-Result {
         param([string]$Severity, [string]$Location, [string]$Message)
-        $r = [pscustomobject]@{ Severity = $Severity; Location = $Location; Message = $Message }
+        $r = [PSCustomObject]@{ Severity = $Severity; Location = $Location; Message = $Message }
         $results.Add($r)
         if ($Strict -and $Severity -eq 'Error') { throw "$Location`: $Message" }
     }
@@ -109,7 +114,7 @@ function Test-ClaudeHookConfig {
                 }
 
                 switch ($h['type']) {
-                    { $_ -in 'command','mcp_tool' } {
+                    { $_ -in 'command', 'mcp_tool' } {
                         if (-not $h['command']) {
                             Add-Result -Severity Error -Location $hLoc -Message 'command type requires a command field.'
                         } elseif ($h['type'] -eq 'command') {
@@ -127,7 +132,7 @@ function Test-ClaudeHookConfig {
                             Add-Result -Severity Error -Location $hLoc -Message 'http type requires a url field.'
                         }
                     }
-                    { $_ -in 'prompt','agent' } {
+                    { $_ -in 'prompt', 'agent' } {
                         if (-not $h['prompt']) {
                             Add-Result -Severity Error -Location $hLoc -Message "$($h['type']) type requires a prompt field."
                         }

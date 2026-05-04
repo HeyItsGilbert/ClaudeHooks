@@ -6,7 +6,7 @@ function Get-ClaudeHookConfig {
         Returns a flat list of hook entries from the specified settings files.
         Each row includes Scope, Path, Event, Matcher, Type, Command, Shell, and Timeout.
         Use -Scope All (default) to read User, Project, and Local files in priority order.
-        Rows are tagged with their source scope — this function lists, it does not resolve
+        Rows are tagged with their source scope - this function lists, it does not resolve
         effective hooks (precedence merging is not applied).
     .PARAMETER Event
         Filter results to a specific event name.
@@ -30,7 +30,13 @@ function Get-ClaudeHookConfig {
     .LINK
         about_ClaudeHooks
     #>
-    [OutputType([pscustomobject])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidAssignmentToAutomaticVariable',
+        'Event',
+        Scope = 'Function',
+        Justification = 'Parameter is immediately re-assigned.'
+    )]
+    [OutputType([PSCustomObject])]
     [CmdletBinding()]
     param(
         [string]$Event,
@@ -41,12 +47,16 @@ function Get-ClaudeHookConfig {
 
         [string]$Path
     )
+    # $eventName is an automatic variable in event handlers, so we use
+    # $eventName for the parameter and $eventNameName for the internal variable
+    # to avoid conflicts.
+    $eventName = $PSBoundParameters['Event']
 
     $targets = if ($Scope -eq 'All') {
         @(
-            @{ Scope = 'User';    Path = Resolve-ClaudeSettingsPath -Scope User }
+            @{ Scope = 'User'; Path = Resolve-ClaudeSettingsPath -Scope User }
             @{ Scope = 'Project'; Path = Resolve-ClaudeSettingsPath -Scope Project }
-            @{ Scope = 'Local';   Path = Resolve-ClaudeSettingsPath -Scope Local }
+            @{ Scope = 'Local'; Path = Resolve-ClaudeSettingsPath -Scope Local }
         )
     } elseif ($Scope -eq 'Plugin') {
         @(@{ Scope = 'Plugin'; Path = $Path })
@@ -67,7 +77,7 @@ function Get-ClaudeHookConfig {
         if (-not $settings['hooks']) { continue }
 
         foreach ($evtName in $settings['hooks'].Keys) {
-            if ($Event -and $evtName -ne $Event) { continue }
+            if ($eventName -and $evtName -ne $eventName) { continue }
 
             foreach ($matcherEntry in @($settings['hooks'][$evtName])) {
                 $mStr = $matcherEntry['matcher']
@@ -75,13 +85,13 @@ function Get-ClaudeHookConfig {
 
                 foreach ($h in @($matcherEntry['hooks'])) {
                     [pscustomobject]@{
-                        Scope   = $target.Scope
-                        Path    = $filePath
-                        Event   = $evtName
+                        Scope = $target.Scope
+                        Path = $filePath
+                        Event = $evtName
                         Matcher = $mStr
-                        Type    = $h['type']
+                        Type = $h['type']
                         Command = $h['command']
-                        Shell   = $h['shell']
+                        Shell = $h['shell']
                         Timeout = $h['timeout']
                     }
                 }

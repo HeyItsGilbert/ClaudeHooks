@@ -28,6 +28,12 @@ function Write-ClaudeHookContext {
     .LINK
         about_ClaudeHooks
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidAssignmentToAutomaticVariable',
+        'Event',
+        Scope = 'Function',
+        Justification = 'Parameter is immediately re-assigned.'
+    )]
     [OutputType([string])]
     [CmdletBinding()]
     param(
@@ -37,7 +43,9 @@ function Write-ClaudeHookContext {
         [Parameter(Mandatory)]
         [string]$Context
     )
+    # Event is an automatic variable. This protects us just in case.
+    $eventName = $PSBoundParameters['Event']
 
-    $hso = [ordered]@{ hookEventName = $Event; additionalContext = $Context }
+    $hso = [ordered]@{ hookEventName = $eventName; additionalContext = $Context }
     Write-ClaudeHookResponse -HookSpecificOutput $hso
 }
