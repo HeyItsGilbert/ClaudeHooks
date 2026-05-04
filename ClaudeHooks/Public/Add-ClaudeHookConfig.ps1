@@ -59,7 +59,7 @@ function Add-ClaudeHookConfig {
     #>
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
         'PSAvoidAssignmentToAutomaticVariable',
-        'Event',
+        '$Event',
         Scope = 'Function',
         Justification = 'Parameter is immediately re-assigned.'
     )]
