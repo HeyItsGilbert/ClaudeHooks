@@ -39,29 +39,29 @@ Your hook must emit one of these decisions in the JSON response:
 
 | Situation | Response Field | Function | Notes |
 |-----------|----------------|----------|-------|
-| PreToolUse — allow | `hookSpecificOutput.permissionDecision: allow` | `Write-ClaudeHookAllow` | Tool executes unchanged |
-| PreToolUse — deny | `hookSpecificOutput.permissionDecision: deny` | `Write-ClaudeHookDeny` | Tool blocked; message shown |
-| PreToolUse — ask user | `hookSpecificOutput.permissionDecision: ask` | `Write-ClaudeHookAsk` | User prompted to approve/deny |
-| PreToolUse — allow modified | `hookSpecificOutput` with tool input updates | `Write-ClaudeHookUpdatedInput` | Tool executes with new input |
-| Stop/UserPromptSubmit/PostToolUse — block | `decision: block` | `Write-ClaudeHookBlock` | Action blocked; message shown |
-| Any event — inject context | `systemMessage` | `Write-ClaudeHookContext` | Non-blocking; Claude reads message |
-| Any event — show message | `systemMessage` | `Write-ClaudeHookResponse -SystemMessage` | Non-blocking; user sees message |
-| Any event — hard error | exit code 2 | `Write-ClaudeHookResponse -BlockingError` | Hook error; stderr shown |
+| PreToolUse - allow | `hookSpecificOutput.permissionDecision: allow` | `Write-ClaudeHookAllow` | Tool executes unchanged |
+| PreToolUse - deny | `hookSpecificOutput.permissionDecision: deny` | `Write-ClaudeHookDeny` | Tool blocked; message shown |
+| PreToolUse - ask user | `hookSpecificOutput.permissionDecision: ask` | `Write-ClaudeHookAsk` | User prompted to approve/deny |
+| PreToolUse - allow modified | `hookSpecificOutput` with tool input updates | `Write-ClaudeHookUpdatedInput` | Tool executes with new input |
+| Stop/UserPromptSubmit/PostToolUse - block | `decision: block` | `Write-ClaudeHookBlock` | Action blocked; message shown |
+| Any event - inject context | `systemMessage` | `Write-ClaudeHookContext` | Non-blocking; Claude reads message |
+| Any event - show message | `systemMessage` | `Write-ClaudeHookResponse -SystemMessage` | Non-blocking; user sees message |
+| Any event - hard error | exit code 2 | `Write-ClaudeHookResponse -BlockingError` | Hook error; stderr shown |
 
 ### Exit Code Semantics
 
-- **0 (success)** — Hook executed normally. Claude Code parses the JSON response from stdout.
-- **2 (blocking error)** — Hook encountered a fatal error. The response is sent to stderr (not parsed). Claude Code stops and shows the error to the user. Use `Write-ClaudeHookResponse -BlockingError` to trigger this.
-- **Any other code (non-blocking error)** — Hook failed but non-fatally. Claude Code logs the error but continues. No stdout is parsed.
+- **0 (success)** - Hook executed normally. Claude Code parses the JSON response from stdout.
+- **2 (blocking error)** - Hook encountered a fatal error. The response is sent to stderr (not parsed). Claude Code stops and shows the error to the user. Use `Write-ClaudeHookResponse -BlockingError` to trigger this.
+- **Any other code (non-blocking error)** - Hook failed but non-fatally. Claude Code logs the error but continues. No stdout is parsed.
 
 ### Settings Scope Precedence
 
 Hooks are registered to settings files in order of precedence (User < Project < Local < Plugin):
 
-- **User** (`~/.claude/settings.json`) — Global hooks, always loaded
-- **Project** (`.claude/settings.json` in project root) — Project-specific hooks
-- **Local** (`.claude/settings.local.json`) — Machine-specific overrides (not committed)
-- **Plugin** (`plugin.json` in plugin directory) — Plugin-provided hooks
+- **User** (`~/.claude/settings.json`) - Global hooks, always loaded
+- **Project** (`.claude/settings.json` in project root) - Project-specific hooks
+- **Local** (`.claude/settings.local.json`) - Machine-specific overrides (not committed)
+- **Plugin** (`plugin.json` in plugin directory) - Plugin-provided hooks
 
 When multiple hooks match the same event/matcher, all are executed in order of precedence. The first to emit `continue: false` or `decision: block` wins.
 
@@ -162,25 +162,25 @@ Test-ClaudeHookConfig -Event PreToolUse -Matcher Bash
 
 ### Best Practices
 
-1. **Guard against empty/null input** — Use `if (-not $hook)` or `Read-ClaudeHookInput -Quiet`
-2. **Exit with 0** — Always exit 0 on success, even if you didn't emit a response
-3. **Keep hooks fast** — Target <100ms. Timeout defaults to 5 seconds.
-4. **Be idempotent** — Hooks may be called multiple times per event. Avoid side effects.
-5. **Prefer helpers over raw JSON** — Use `Write-ClaudeHookDeny`, etc., not manual `ConvertTo-Json`
-6. **Test before registering** — Use Pester or `Test-ClaudeHookConfig` to verify behavior
+1. **Guard against empty/null input** - Use `if (-not $hook)` or `Read-ClaudeHookInput -Quiet`
+2. **Exit with 0** - Always exit 0 on success, even if you didn't emit a response
+3. **Keep hooks fast** - Target <100ms. Timeout defaults to 5 seconds.
+4. **Be idempotent** - Hooks may be called multiple times per event. Avoid side effects.
+5. **Prefer helpers over raw JSON** - Use `Write-ClaudeHookDeny`, etc., not manual `ConvertTo-Json`
+6. **Test before registering** - Use Pester or `Test-ClaudeHookConfig` to verify behavior
 
 ## NOTES
 
 Claude Code hooks are a powerful way to extend and customize Claude's behavior. They operate at the boundary between Claude's decision-making and tool execution, giving you fine-grained control over what actions Claude can take.
 
 For the official hooks specification and examples, see:
-https://code.claude.com/docs/en/hooks.md
+<https://code.claude.com/docs/en/hooks.md>
 
 ## SEE ALSO
 
-- `Get-ClaudeHookEventList` — List all valid hook events
-- `Read-ClaudeHookInput` — Read hook payload from stdin
-- `Write-ClaudeHookResponse` — Low-level response builder
+- `Get-ClaudeHookEventList` - List all valid hook events
+- `Read-ClaudeHookInput` - Read hook payload from stdin
+- `Write-ClaudeHookResponse` - Low-level response builder
 - `Write-ClaudeHookAllow`, `Write-ClaudeHookDeny`, `Write-ClaudeHookAsk`
 - `Add-ClaudeHookConfig`, `Get-ClaudeHookConfig`, `Remove-ClaudeHookConfig`
-- `Test-ClaudeHookConfig` — Test a hook with sample input
+- `Test-ClaudeHookConfig` - Test a hook with sample input

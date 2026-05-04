@@ -1,0 +1,17 @@
+name: Update Github Pages
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  pages:
+    # Deploy the docs to Github Pages:
+    uses: HeyItsGilbert/.github/.github/workflows/Pages.yaml@main
+    with:
+      # Copy the Guides into the docs
+      additional_copies: |
+        static/:docs/assets/images/
+        guides/:docs/guides/

@@ -11,11 +11,11 @@ function Get-ClaudeBashBaseCommand {
     .EXAMPLE
         Get-ClaudeBashBaseCommand 'grep -r "foo" .'
 
-        Returns 'grep' — strips arguments and returns the base executable name.
+        Returns 'grep' - strips arguments and returns the base executable name.
     .EXAMPLE
         Get-ClaudeBashBaseCommand '/usr/bin/curl -s https://example.com'
 
-        Returns 'curl' — strips the full path prefix as well as arguments.
+        Returns 'curl' - strips the full path prefix as well as arguments.
     .OUTPUTS
         System.String
     .LINK
@@ -27,7 +27,8 @@ function Get-ClaudeBashBaseCommand {
         [Parameter(Mandatory, ValueFromPipeline)]
         [string]$Command
     )
-
-    $token = ($Command.Trim() -split '\s+')[0]
-    ($token -replace '^.*[/\\]', '').ToLower()
+    process {
+        $token = ($Command.Trim() -split '\s+')[0]
+        ($token -replace '^.*[/\\]', '').ToLower()
+    }
 }

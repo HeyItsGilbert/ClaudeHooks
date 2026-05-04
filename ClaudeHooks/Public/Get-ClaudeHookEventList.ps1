@@ -16,13 +16,13 @@ function Get-ClaudeHookEventList {
 
         Validates that a given event name is in the canonical set.
     .OUTPUTS
-        System.String[]
+        System.Array
     .LINK
         about_ClaudeHooks
     .LINK
         https://code.claude.com/docs/en/hooks.md
     #>
-    [OutputType([string[]])]
+    [OutputType([Array])]
     [CmdletBinding()]
     param()
 

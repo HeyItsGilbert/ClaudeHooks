@@ -25,7 +25,7 @@ function Add-ClaudeHookConfig {
     .PARAMETER Shell
         Shell to use for command hooks: 'powershell' or 'bash'. Default: 'powershell'.
     .PARAMETER Type
-        Hook type. One of: command, http, McpTool (→ mcp_tool), prompt, agent.
+        Hook type. One of: command, http, McpTool (-> mcp_tool), prompt, agent.
         Default: 'command'.
     .PARAMETER Timeout
         Hook timeout in seconds.
@@ -45,7 +45,7 @@ function Add-ClaudeHookConfig {
 
         Registers a PreToolUse hook for Bash commands in the user settings using a safe quoted path.
     .EXAMPLE
-        # Raw command (escape hatch — caller handles quoting)
+        # Raw command (escape hatch - caller handles quoting)
         Add-ClaudeHookConfig -Event Stop -Matcher '' `
             -Command 'pwsh -File "C:\hooks\on-stop.ps1"' -Scope Project
 
@@ -57,6 +57,11 @@ function Add-ClaudeHookConfig {
     .LINK
         https://code.claude.com/docs/en/hooks.md
     #>
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute(
+        'PSAvoidAssignmentToAutomaticVariable',
+        'Event',
+        Justification = 'Parameter is immediately re-assigned.'
+    )]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Mandatory)]
@@ -90,45 +95,72 @@ function Add-ClaudeHookConfig {
         [switch]$Force,
         [switch]$PassThru
     )
+    # $eventName is an automatic variable in event handlers, so we use
+    # $eventName for the parameter and $eventNameName for the internal variable
+    # to avoid conflicts.
+    $eventName = $PSBoundParameters['Event']
 
     if ($PSCmdlet.ParameterSetName -eq 'ScriptPath') {
         $resolved = $ScriptPath
-        $argStr   = if ($ArgumentList) { ' ' + ($ArgumentList -join ' ') } else { '' }
-        $Command  = "pwsh -NoProfile -File `"$resolved`"$argStr"
+        $argStr = if ($ArgumentList) {
+            ' ' + ($ArgumentList -join ' ')
+        } else {
+            ''
+        }
+
+        $command = "pwsh -NoProfile -File `"$resolved`"$argStr"
     }
 
     $jsonType = if ($Type -eq 'McpTool') { 'mcp_tool' } else { $Type }
 
-    $hookEntry = [ordered]@{ type = $jsonType; command = $Command; shell = $Shell }
-    if ($PSBoundParameters.ContainsKey('Timeout')) { $hookEntry['timeout'] = $Timeout }
+    $hookEntry = [ordered]@{ type = $jsonType; command = $command; shell = $Shell }
+    if ($PSBoundParameters.ContainsKey('Timeout')) {
+        $hookEntry['timeout'] = $Timeout
+    }
 
-    $filePath = if ($PSBoundParameters.ContainsKey('Path') -and $Scope -ne 'Plugin') {
+    $filePath = if (
+        $PSBoundParameters.ContainsKey('Path') -and
+        $Scope -ne 'Plugin'
+    ) {
         $Path
     } else {
         Resolve-ClaudeSettingsPath -Scope $Scope -Path $Path
     }
 
-    if (-not $PSCmdlet.ShouldProcess($filePath, "Add $Event hook (matcher: '$Matcher')")) { return }
+    # ShouldProcess support for WhatIf and Confirm prompts
+    $processDescription = "Add hook for event '$eventName' with matcher '$Matcher' to $filePath"
+    if (-not $PSCmdlet.ShouldProcess($filePath, $processDescription)) { return }
 
-    $editFn = if ($Scope -eq 'Plugin') { { param($p,$m) Edit-ClaudePluginManifest -Path $p -Modifier $m } }
-              else                      { { param($p,$m) Edit-ClaudeSettingsFile   -Path $p -Modifier $m } }
+    $editFn = if ($Scope -eq 'Plugin') {
+        { param($p, $m) Edit-ClaudePluginManifest -Path $p -Modifier $m }
+    } else {
+        { param($p, $m) Edit-ClaudeSettingsFile -Path $p -Modifier $m }
+    }
 
+    # The modifier script block for both settings and plugin manifest has the
+    # same structure:
     & $editFn $filePath {
         param($settings)
 
-        if (-not $settings['hooks']) { $settings['hooks'] = [ordered]@{} }
-        if (-not $settings['hooks'][$Event]) { $settings['hooks'][$Event] = @() }
+        if (-not $settings['hooks']) {
+            $settings['hooks'] = [ordered]@{}
+        }
+        if (-not $settings['hooks'][$eventName]) {
+            $settings['hooks'][$eventName] = @()
+        }
 
-        $matcherEntries = @($settings['hooks'][$Event])
-        $matcherEntry   = $matcherEntries | Where-Object { $_['matcher'] -eq $Matcher } | Select-Object -First 1
+        $matcherEntries = @($settings['hooks'][$eventName])
+        $matcherEntry = $matcherEntries | Where-Object {
+            $_['matcher'] -eq $Matcher
+        } | Select-Object -First 1
 
         if (-not $matcherEntry) {
             $matcherEntry = [ordered]@{ matcher = $Matcher; hooks = @() }
-            $settings['hooks'][$Event] = @($matcherEntries) + @($matcherEntry)
+            $settings['hooks'][$eventName] = @($matcherEntries) + @($matcherEntry)
         }
 
         $existing = @($matcherEntry['hooks']) | Where-Object {
-            $_['type'] -eq $jsonType -and $_['command'] -eq $Command
+            $_['type'] -eq $jsonType -and $_['command'] -eq $command
         } | Select-Object -First 1
 
         if ($existing -and -not $Force) {

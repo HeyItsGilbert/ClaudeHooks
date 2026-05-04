@@ -1,6 +1,6 @@
-# PSClaudeHelpers
+# ClaudeHooks
 
-## about_PSClaudeHelpers
+## about_ClaudeHooks
 
 ```
 ABOUT TOPIC NOTE:
