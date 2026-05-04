@@ -1,4 +1,50 @@
-site_name: https://HeyItsGilbert.github.io/ClaudeHooks
-repo_url: https://github.com/HeyItsGilbert/ClaudeHooks
-theme: readthedocs
+site_name: Claude Hooks
+site_url: http://heyitsgilbert.github.io/ClaudeHooks
+site_description: Feature flags for PowerShell projects
+repo_url: http://github.com/HeyItsGilbert/ClaudeHooks
+repo_name: HeyItsGilbert/ClaudeHooks
 
+theme:
+  logo: assets/images/icon.png
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+  - Changelog: "https://github.com/HeyItsGilbert/ClaudeHooks/blob/main/CHANGELOG.md"
+  - Commands:
+      - en-US/
+
+plugins:
+  - search
+  - include_dir_to_nav
+
+markdown_extensions:
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format ""
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - toc:
+      permalink: true
