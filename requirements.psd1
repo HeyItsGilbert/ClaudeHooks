@@ -24,7 +24,7 @@
         Version = '0.7.2'
     }
     'PSScriptAnalyzer' = @{
-        Version = '1.19.1'
+        Version = '1.25.0'
     }
     'GoodEnoughRules' = @{
         Version = 'latest'
