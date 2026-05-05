@@ -168,6 +168,24 @@ Test-ClaudeHookConfig -Event PreToolUse -Matcher Bash
 4. **Be idempotent** - Hooks may be called multiple times per event. Avoid side effects.
 5. **Prefer helpers over raw JSON** - Use `Write-ClaudeHookDeny`, etc., not manual `ConvertTo-Json`
 6. **Test before registering** - Use Pester or `Test-ClaudeHookConfig` to verify behavior
+7. **Avoid `#Requires` for module dependencies** - `#Requires -Modules SomeModule` is evaluated at parse time. If the module is missing, PowerShell terminates the script before any code runs, the hook exits with a non-zero code, and Claude Code may silently skip it — a PreToolUse hook that fails this way neither blocks nor allows the tool call. Use a runtime check instead:
+
+   ```powershell
+   if (-not (Get-Module -ListAvailable SomeModule)) {
+       Write-Error "SomeModule is not installed. Run: Install-Module SomeModule -Scope CurrentUser"
+       exit 1
+   }
+   Import-Module SomeModule
+   ```
+
+   Or install defensively on first use:
+
+   ```powershell
+   if (-not (Get-Module -ListAvailable SomeModule)) {
+       Install-Module SomeModule -Scope CurrentUser -Force
+   }
+   Import-Module SomeModule
+   ```
 
 ## NOTES
 
