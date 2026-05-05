@@ -1,11 +1,10 @@
 site_name: Claude Hooks
 site_url: http://heyitsgilbert.github.io/ClaudeHooks
-site_description: Feature flags for PowerShell projects
+site_description: PowerShell helpers for writing and registering Claude Code hook scripts.
 repo_url: http://github.com/HeyItsGilbert/ClaudeHooks
 repo_name: HeyItsGilbert/ClaudeHooks
 
 theme:
-  logo: assets/images/icon.png
   name: material
   features:
     - content.code.copy
