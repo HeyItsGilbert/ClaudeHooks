@@ -38,6 +38,7 @@ function Write-ClaudeHookContext {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
+        [ArgumentCompleter({ Get-ClaudeHookEventList })]
         [string]$Event,
 
         [Parameter(Mandatory)]

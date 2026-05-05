@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-05-04
+
+### Added
+
+- `[ArgumentCompleter]` on `-Event` in `Add-ClaudeHookConfig`,
+  `Get-ClaudeHookConfig`, `Remove-ClaudeHookConfig`, and
+  `Write-ClaudeHookContext` — enables tab completion for event names
+- `[ArgumentCompleter]` on `-Decision` in `Write-ClaudeHookResponse`
+- Three ready-to-use example hook scripts under `Examples/`:
+  `block-rm-rf.md`, `inject-edit-context.md`, `session-banner.md`
+- `requirements.txt` listing MkDocs dependencies
+
+### Changed
+
+- MkDocs theme switched to `material`; navigation restructured to
+  include Home, Changelog, Commands, and Examples sections
+- Examples directory moved from `docs/Examples/` to `Examples/` at
+  the repo root
+
+### Fixed
+
+- GitHub Pages workflow copy path corrected from `guides/` to
+  `Examples/`
+
 ## [0.1.1] - 2026-05-04
 
 ### Added

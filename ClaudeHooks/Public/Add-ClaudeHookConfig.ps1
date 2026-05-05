@@ -66,6 +66,7 @@ function Add-ClaudeHookConfig {
     param(
         [Parameter(Mandatory)]
         [ValidateScript({ $_ -in (Get-ClaudeHookEventList) })]
+        [ArgumentCompleter({ Get-ClaudeHookEventList })]
         [string]$Event,
 
         [string]$Matcher = '',
