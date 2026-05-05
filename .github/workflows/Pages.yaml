@@ -11,7 +11,7 @@ jobs:
     # Deploy the docs to Github Pages:
     uses: HeyItsGilbert/.github/.github/workflows/Pages.yaml@main
     with:
-      # Copy the Guides into the docs
+      # Copy static assets and Examples into the docs
       additional_copies: |
         static/:docs/assets/images/
         Examples/:docs/Examples/

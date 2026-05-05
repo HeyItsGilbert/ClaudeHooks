@@ -17,14 +17,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - `[ArgumentCompleter]` on `-Decision` in `Write-ClaudeHookResponse`
 - Three ready-to-use example hook scripts under `Examples/`:
   `block-rm-rf.md`, `inject-edit-context.md`, `session-banner.md`
-- `requirements.txt` listing MkDocs dependencies
+- `docs/requirements.txt` listing MkDocs dependencies
 
 ### Changed
 
 - MkDocs theme switched to `material`; navigation restructured to
   include Home, Changelog, Commands, and Examples sections
-- Examples directory moved from `docs/Examples/` to `Examples/` at
-  the repo root
+- Documentation examples are now sourced from the repo-root
+  `Examples/` directory during site publishing/build workflows
 
 ### Fixed
 
