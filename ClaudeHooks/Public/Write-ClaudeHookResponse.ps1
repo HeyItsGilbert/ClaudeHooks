@@ -45,6 +45,7 @@ function Write-ClaudeHookResponse {
         [string]$StopReason,
         [string]$SystemMessage,
         [switch]$SuppressOutput,
+        [ArgumentCompleter({ 'block' })]
         [string]$Decision,
         [string]$Reason,
         [hashtable]$HookSpecificOutput,
@@ -54,14 +55,14 @@ function Write-ClaudeHookResponse {
     $response = [ordered]@{}
 
     if ($PSBoundParameters.ContainsKey('StopReason')) {
-        $response['continue']    = $false
-        $response['stopReason']  = $StopReason
+        $response['continue'] = $false
+        $response['stopReason'] = $StopReason
     }
-    if ($PSBoundParameters.ContainsKey('SystemMessage'))  { $response['systemMessage']  = $SystemMessage }
-    if ($SuppressOutput)                                   { $response['suppressOutput'] = $true }
-    if ($PSBoundParameters.ContainsKey('Decision'))        { $response['decision']       = $Decision }
-    if ($PSBoundParameters.ContainsKey('Reason'))          { $response['reason']         = $Reason }
-    if ($HookSpecificOutput)                               { $response['hookSpecificOutput'] = $HookSpecificOutput }
+    if ($PSBoundParameters.ContainsKey('SystemMessage')) { $response['systemMessage'] = $SystemMessage }
+    if ($SuppressOutput) { $response['suppressOutput'] = $true }
+    if ($PSBoundParameters.ContainsKey('Decision')) { $response['decision'] = $Decision }
+    if ($PSBoundParameters.ContainsKey('Reason')) { $response['reason'] = $Reason }
+    if ($HookSpecificOutput) { $response['hookSpecificOutput'] = $HookSpecificOutput }
 
     $json = ConvertTo-ClaudeHookJson -InputObject $response
     Write-Output $json

@@ -39,6 +39,7 @@ function Get-ClaudeHookConfig {
     [OutputType([PSCustomObject])]
     [CmdletBinding()]
     param(
+        [ArgumentCompleter({ Get-ClaudeHookEventList })]
         [string]$Event,
         [string]$Matcher,
 

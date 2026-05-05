@@ -38,6 +38,10 @@ function Write-ClaudeHookContext {
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)]
+        [ValidateSet('SessionStart', 'Setup', 'UserPromptSubmit', 'UserPromptExpansion', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'PostToolBatch')]
+        [ArgumentCompleter({
+            'SessionStart', 'Setup', 'UserPromptSubmit', 'UserPromptExpansion', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'PostToolBatch'
+        })]
         [string]$Event,
 
         [Parameter(Mandatory)]
