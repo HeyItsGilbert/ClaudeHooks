@@ -31,6 +31,8 @@ nav:
   - Changelog: "https://github.com/HeyItsGilbert/ClaudeHooks/blob/main/CHANGELOG.md"
   - Commands:
       - en-US/
+  - Examples:
+      - Examples/
 
 plugins:
   - search
