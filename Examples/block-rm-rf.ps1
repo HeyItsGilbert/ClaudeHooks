@@ -1,5 +1,8 @@
 # Block rm -rf commands in Bash
 #
+# Intended to be run as a hook entry point, not dot-sourced — it calls
+# `exit 0`, which would terminate a session that dot-sources it.
+#
 # Copy this to your hooks directory (e.g. ~/.claude/hooks/) before registering.
 #
 # Register with:

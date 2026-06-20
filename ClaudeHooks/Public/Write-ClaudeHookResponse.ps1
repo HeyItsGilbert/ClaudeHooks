@@ -63,7 +63,7 @@ function Write-ClaudeHookResponse {
     if ($PSBoundParameters.ContainsKey('Decision')) { $response['decision'] = $Decision }
     if ($PSBoundParameters.ContainsKey('Reason')) { $response['reason'] = $Reason }
     if ($HookSpecificOutput) {
-        if (-not $HookSpecificOutput.Contains('hookEventName')) {
+        if (-not $HookSpecificOutput.ContainsKey('hookEventName')) {
             Write-Warning "HookSpecificOutput is missing the required 'hookEventName' field; the response will fail Claude Code's validation. Use Write-ClaudeHookContext/Allow/Ask/Deny, or add hookEventName to the hashtable."
         }
         $response['hookSpecificOutput'] = $HookSpecificOutput
