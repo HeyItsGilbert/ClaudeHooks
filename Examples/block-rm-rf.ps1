@@ -8,13 +8,11 @@
 
 Import-Module ClaudeHooks
 
-if ($MyInvocation.InvocationName -ne '.') {
-    $hook = Read-ClaudeHookInput -Quiet
-    if (-not $hook) { exit 0 }
+$hook = Read-ClaudeHookInput -Quiet
+if (-not $hook) { exit 0 }
 
-    $base = Get-ClaudeBashBaseCommand $hook.tool_input.command
-    if ($base -eq 'rm' -and $hook.tool_input.command -match '-rf?') {
-        Write-ClaudeHookDeny -Reason 'rm -rf is not allowed. Use Remove-Item -Recurse instead.'
-    }
-    exit 0
+$base = Get-ClaudeBashBaseCommand $hook.tool_input.command
+if ($base -eq 'rm' -and $hook.tool_input.command -match '-rf?') {
+    Write-ClaudeHookDeny -Reason 'rm -rf is not allowed. Use Remove-Item -Recurse instead.'
 }
+exit 0

@@ -8,12 +8,10 @@
 
 Import-Module ClaudeHooks
 
-if ($MyInvocation.InvocationName -ne '.') {
-    $hook = Read-ClaudeHookInput -Quiet
-    if (-not $hook) { exit 0 }
+$hook = Read-ClaudeHookInput -Quiet
+if (-not $hook) { exit 0 }
 
-    $projectName = Split-Path (Get-Location) -Leaf
-    Write-ClaudeHookContext -Event SessionStart `
-        -Context "Project: $projectName | Shell: PowerShell 7 | Prefer pwsh cmdlets over bash equivalents."
-    exit 0
-}
+$projectName = Split-Path (Get-Location) -Leaf
+Write-ClaudeHookContext -Event SessionStart `
+    -Context "Project: $projectName | Shell: PowerShell 7 | Prefer pwsh cmdlets over bash equivalents."
+exit 0

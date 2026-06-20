@@ -8,14 +8,12 @@
 
 Import-Module ClaudeHooks
 
-if ($MyInvocation.InvocationName -ne '.') {
-    $hook = Read-ClaudeHookInput -Quiet
-    if (-not $hook) { exit 0 }
+$hook = Read-ClaudeHookInput -Quiet
+if (-not $hook) { exit 0 }
 
-    $path = $hook.tool_input.file_path
-    if ($path -and $path -like '*.generated.*') {
-        Write-ClaudeHookContext -Event PostToolUse `
-            -Context "Note: '$path' is auto-generated. Prefer editing the source template instead."
-    }
-    exit 0
+$path = $hook.tool_input.file_path
+if ($path -and $path -like '*.generated.*') {
+    Write-ClaudeHookContext -Event PostToolUse `
+        -Context "Note: '$path' is auto-generated. Prefer editing the source template instead."
 }
+exit 0
