@@ -1,28 +1,28 @@
 function Read-ClaudeHookInput {
     <#
     .SYNOPSIS
-        Reads and parses the JSON payload that Claude Code sends to a hook script on stdin.
+        Reads and parses the JSON payload that Claude Code sends to a hook script.
     .DESCRIPTION
-        In production (no -InputString), reads [Console]::In to end.
-        In tests, pass -InputString to avoid reading actual stdin.
-        Rejects payloads over 10MB. Throws on invalid JSON unless -Quiet is specified.
+        In production, reads from $global:ClaudeHookInput, which PowerServe injects before
+        executing the hook script. Pass -InputString to supply a payload directly, e.g. in
+        Pester tests. Rejects payloads over 10MB. Throws on invalid JSON unless -Quiet is
+        specified.
     .PARAMETER InputString
-        JSON string to parse instead of reading stdin. Used for Pester testing.
+        JSON string to parse directly. Used for Pester testing.
     .PARAMETER Quiet
         Returns $null instead of throwing when JSON is invalid or input is empty.
     .EXAMPLE
-        # In a hook script's main block:
         $hook = Read-ClaudeHookInput
-        $hook.tool_name  # e.g. 'Bash'
-        $hook.tool_input.command  # e.g. 'rm -rf /'
+        $hook.tool_name          # e.g. 'Bash'
+        $hook.tool_input.command # e.g. 'rm -rf /'
 
-        Reads stdin from Claude and accesses the parsed event properties.
+        Reads the injected payload from Claude and accesses the parsed event properties.
     .EXAMPLE
         # In a Pester test:
         $hook = Read-ClaudeHookInput -InputString '{"tool_name":"Bash","tool_input":{"command":"ls"}}'
         $hook.tool_name | Should -Be 'Bash'
 
-        Uses -InputString to inject a test payload without touching real stdin.
+        Uses -InputString to inject a test payload without relying on the global variable.
     .OUTPUTS
         System.Management.Automation.PSCustomObject
     .LINK
@@ -42,7 +42,7 @@ function Read-ClaudeHookInput {
     if ($PSBoundParameters.ContainsKey('InputString')) {
         $raw = $InputString
     } else {
-        $raw = [Console]::In.ReadToEnd()
+        $raw = $global:ClaudeHookInput
     }
 
     if ([string]::IsNullOrWhiteSpace($raw)) {

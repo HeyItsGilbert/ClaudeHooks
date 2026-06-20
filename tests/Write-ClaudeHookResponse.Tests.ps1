@@ -45,6 +45,19 @@ Describe 'Write-ClaudeHookResponse' {
     It 'returns a string (not exits) without -BlockingError' {
         { Write-ClaudeHookResponse -SystemMessage 'test' } | Should -Not -Throw
     }
+
+    It 'warns when HookSpecificOutput is missing hookEventName' {
+        $warnings = Write-ClaudeHookResponse -HookSpecificOutput @{ additionalContext = 'x' } 3>&1 |
+            Where-Object { $_ -is [System.Management.Automation.WarningRecord] }
+        $warnings | Should -Not -BeNullOrEmpty
+        $warnings.Message | Should -Match 'hookEventName'
+    }
+
+    It 'does not warn when HookSpecificOutput includes hookEventName' {
+        $warnings = Write-ClaudeHookResponse -HookSpecificOutput @{ hookEventName = 'PreToolUse'; additionalContext = 'x' } 3>&1 |
+            Where-Object { $_ -is [System.Management.Automation.WarningRecord] }
+        $warnings | Should -BeNullOrEmpty
+    }
 }
 
 Describe 'Write-ClaudeHookAllow' {

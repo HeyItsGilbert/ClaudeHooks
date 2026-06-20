@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-19
+
+### Added
+
+- `Write-ClaudeHookResponse` now warns when `-HookSpecificOutput` is
+  passed without the required `hookEventName` field, which would
+  otherwise fail Claude Code's response validation
+
+### Changed
+
+- **Breaking:** `Read-ClaudeHookInput` now reads the hook payload from
+  the `$global:ClaudeHookInput` variable (injected by PowerServe)
+  instead of stdin (`[Console]::In`)
+- Example hook scripts (`block-rm-rf`, `inject-edit-context`,
+  `session-banner`) simplified — removed the dot-source guard wrapper
+  so they run directly as hook entry points
+- Documented a best practice against using `#Requires` for hook
+  module imports
+
 ## [0.1.2] - 2026-05-04
 
 ### Added

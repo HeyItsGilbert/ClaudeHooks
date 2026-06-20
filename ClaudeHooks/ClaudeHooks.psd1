@@ -1,6 +1,6 @@
 @{
     RootModule = 'ClaudeHooks.psm1'
-    ModuleVersion = '0.1.2'
+    ModuleVersion = '0.2.0'
     GUID = '345099e0-5c0c-4c0b-8117-1c070d3393ca'
     Author = 'Gilbert Sanchez'
     Copyright = '(c) Gilbert Sanchez. All rights reserved.'

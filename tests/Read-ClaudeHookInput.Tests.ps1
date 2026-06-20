@@ -37,4 +37,22 @@ Describe 'Read-ClaudeHookInput' {
         $result = Read-ClaudeHookInput -InputString $json
         $result.tool_input.file_path | Should -Be '/tmp/foo.txt'
     }
+
+    Context 'production path (no -InputString)' {
+        AfterEach {
+            Remove-Variable -Name ClaudeHookInput -Scope Global -ErrorAction SilentlyContinue
+        }
+
+        It 'reads the payload from $global:ClaudeHookInput' {
+            $global:ClaudeHookInput = '{"tool_name":"Bash","tool_input":{"command":"ls"}}'
+            $result = Read-ClaudeHookInput
+            $result.tool_name          | Should -Be 'Bash'
+            $result.tool_input.command | Should -Be 'ls'
+        }
+
+        It 'returns $null with -Quiet when the global is unset' {
+            Remove-Variable -Name ClaudeHookInput -Scope Global -ErrorAction SilentlyContinue
+            Read-ClaudeHookInput -Quiet | Should -BeNullOrEmpty
+        }
+    }
 }
