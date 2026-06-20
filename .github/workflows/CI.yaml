@@ -11,3 +11,5 @@ jobs:
   ci:
     name: Continuous Integration
     uses: HeyItsGilbert/.github/.github/workflows/ModuleCI.yml@main
+    with:
+      skipWindowsPowerShell: true

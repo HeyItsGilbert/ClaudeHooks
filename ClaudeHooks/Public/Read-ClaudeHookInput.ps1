@@ -15,10 +15,14 @@ function Read-ClaudeHookInput {
         $hook = Read-ClaudeHookInput
         $hook.tool_name          # e.g. 'Bash'
         $hook.tool_input.command # e.g. 'rm -rf /'
+
+        Reads the injected payload from Claude and accesses the parsed event properties.
     .EXAMPLE
         # In a Pester test:
         $hook = Read-ClaudeHookInput -InputString '{"tool_name":"Bash","tool_input":{"command":"ls"}}'
         $hook.tool_name | Should -Be 'Bash'
+
+        Uses -InputString to inject a test payload without relying on the global variable.
     .OUTPUTS
         System.Management.Automation.PSCustomObject
     .LINK
